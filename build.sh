@@ -2,6 +2,8 @@
 # Script to build image for qemu.
 # Author: Siddhant Jajoo.
 
+source build-helper.sh
+
 git submodule init
 git submodule sync
 git submodule update
@@ -27,15 +29,11 @@ fi
 
 
 # layer configuration
-bitbake-layers show-layers | grep "meta-raspberrypi" > /dev/null
-layer_info=$?
-
-if [ $layer_info -ne 0 ];then
-	echo "Adding meta-raspberrypi layer"
-	bitbake-layers add-layer ../meta-raspberrypi
-else
-	echo "meta-raspberrypi layer already exists"
-fi
+config_layer "meta-openembedded/meta-oe"
+config_layer "meta-openembedded/meta-python"
+config_layer "meta-openembedded/meta-multimedia"
+config_layer "meta-openembedded/meta-networking"
+config_layer "meta-raspberrypi"
 
 # TODO: add the rest of the layers
 
