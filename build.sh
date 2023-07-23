@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to build image for qemu.
-# Author: Siddhant Jajoo.
+# Author: isch
 
 source build-helper.sh
 
@@ -11,31 +11,36 @@ git submodule update
 # local.conf won't exist until this step on first execution
 source poky/oe-init-build-env
 
-# configure for raspberrypi3-64
-CONFLINE="MACHINE = \"raspberrypi3-64\""
 
-cat conf/local.conf | grep "${CONFLINE}" > /dev/null
-local_conf_info=$?
+### configurations ###
+echo -e "\nlocal.conf configurations"
+config_localconf "MACHINE = \"raspberrypi3-64\""
 
-if [ $local_conf_info -ne 0 ];then
-	echo "Append ${CONFLINE} in the local.conf file"
-	echo ${CONFLINE} >> conf/local.conf
-	
-else
-	echo "${CONFLINE} already exists in the local.conf file"
-fi
+# mpu-6050 configuration
+config_localconf "ENABLE_I2C = \"1\""
+config_localconf "KERNEL_DEVICETREE:append = \" overlays/mpu6050.dtbo\""
+# RPI_EXTRA_CONFIG used to add additional lines to config.txt.
+# For the rpi, it uses this config file instead of the BIOS you would expect to
+# find a conventional PC. System config parameters, which would be in BIOS, are
+# stored in this optional text file named config.txt.
+# Note that it is not obvious to me that this line actually does much. The
+# above line "KERNEL_DEVICETREE:append..." seems to actually allow the expected
+# device to show up under "/sys/bus/iio/devices/", but no harm in including.
+# I surmise it is because the device tree was never included in this base image,
+# so you need to include it in the device tree first, else overlay doesn't work.
+config_localconf "RPI_EXTRA_CONFIG = '\\\ndtoverlay=mpu6050\\\n'"\
+		 "RPI_EXTRA_CONFIG = '\ndtoverlay=mpu6050\n'"
 
-# TODO: configure i2c
 
-
-# layer configuration
+### layer configuration ###
+echo -e "\nlayer configuration"
 config_layer "meta-openembedded/meta-oe"
 config_layer "meta-openembedded/meta-python"
 config_layer "meta-openembedded/meta-multimedia"
 config_layer "meta-openembedded/meta-networking"
 config_layer "meta-raspberrypi"
+config_layer "meta-bot"
 
-# TODO: add the rest of the layers
 
 set -e
 #bitbake core-image-aesd
