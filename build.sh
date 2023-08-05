@@ -45,5 +45,4 @@ config_layer "meta-bot"
 
 
 set -e
-#bitbake core-image-aesd
 bitbake core-image-bot
