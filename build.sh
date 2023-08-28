@@ -13,10 +13,24 @@ source poky/oe-init-build-env
 
 ### configurations ###
 echo -e "\nlocal.conf configurations"
-config_localconf "MACHINE = \"raspberrypi3-64\""
-
-# mpu-6050 configuration
+config_localconf "MACHINE = \"raspberrypi3\""
 config_localconf "ENABLE_I2C = \"1\""
+config_localconf "EXTRA_IMAGE_FEATURES:append = \" ssh-server-dropbear\""
+
+### layer configuration ###
+echo -e "\nlayer configuration"
+config_layer "meta-openembedded/meta-oe"
+config_layer "meta-openembedded/meta-python"
+config_layer "meta-openembedded/meta-multimedia"
+config_layer "meta-openembedded/meta-networking"
+config_layer "meta-raspberrypi"
+config_layer "meta-bot"
+
+
+set -e
+bitbake core-image-bot
+
+### archive, but perhaps useful ###
 
 # sysfs trigger didn't work... else I would be using mpu6050 through iio
 # config_localconf "KERNEL_DEVICETREE:append = \" overlays/mpu6050.dtbo\""
@@ -32,17 +46,3 @@ config_localconf "ENABLE_I2C = \"1\""
 # # so you need to include it in the device tree first, else overlay doesn't work.
 # config_localconf "RPI_EXTRA_CONFIG = '\\\ndtoverlay=mpu6050\\\n'"\
 # 		 "RPI_EXTRA_CONFIG = ' \ndtoverlay=mpu6050\n'"
-
-
-### layer configuration ###
-echo -e "\nlayer configuration"
-config_layer "meta-openembedded/meta-oe"
-config_layer "meta-openembedded/meta-python"
-config_layer "meta-openembedded/meta-multimedia"
-config_layer "meta-openembedded/meta-networking"
-config_layer "meta-raspberrypi"
-config_layer "meta-bot"
-
-
-set -e
-bitbake core-image-bot
