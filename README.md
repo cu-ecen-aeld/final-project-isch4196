@@ -1,5 +1,5 @@
 # 5307 Final Project
-This repository contains the Yocto build for the final project.
+This repository contains the Yocto build for the final project. Look in the "Other Repositories" for repository that contains the application firmware.
 # Project Overview
 [https://github.com/cu-ecen-aeld/final-project-isch4196/wiki/Project-Overview](https://github.com/cu-ecen-aeld/final-project-isch4196/wiki/Project-Overview)
 # Project Schedule
